@@ -43,7 +43,7 @@ export default function HowItWorks() {
             return (
               <div
                 key={step.title}
-                className="rounded-2xl border border-[#e6e1d6] bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-[#e6e1d6] bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f1ede4] text-sm font-semibold text-[#01696f]">

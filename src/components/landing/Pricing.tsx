@@ -63,10 +63,10 @@ export default function Pricing() {
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`flex h-full flex-col justify-between rounded-3xl border p-6 shadow-sm ${
+              className={`flex h-full flex-col justify-between rounded-3xl border p-6 shadow-sm transition-shadow duration-200 ${
                 tier.featured
-                  ? "border-transparent bg-[#01696f] text-white"
-                  : "border-[#e6e1d6] bg-white text-[#28251d]"
+                  ? "border-transparent bg-[#01696f] text-white shadow-lg"
+                  : "border-[#e6e1d6] bg-white text-[#28251d] hover:shadow-md"
               }`}
             >
               <div className="space-y-4">
@@ -93,7 +93,7 @@ export default function Pricing() {
                 </ul>
               </div>
               <button
-                className={`mt-6 w-full rounded-full px-4 py-2 text-sm font-semibold transition ${
+                className={`mt-6 w-full rounded-full px-4 py-2 text-sm font-semibold transition active:scale-[0.99] ${
                   tier.featured
                     ? "bg-white text-[#01696f] hover:bg-[#f4f1ea]"
                     : "bg-[#28251d] text-white hover:bg-[#1c1913]"

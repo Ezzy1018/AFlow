@@ -4,11 +4,10 @@ import type {
   AuditReport,
   AuditSeverity,
 } from "@/types/audit";
-import { Anthropic } from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+const modelId = process.env.GEMMA_MODEL_ID || "gemma-2-9b-it";
+const googleApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
 const categoryFallback: AuditCategory[] = [
   "copy",
@@ -22,7 +21,7 @@ const categoryFallback: AuditCategory[] = [
 const severityFallback: AuditSeverity[] = ["critical", "major", "minor"];
 
 async function captureScreenshot(url: string): Promise<string | null> {
-  const apiKey = process.env.SCREENTSHOT_API_KEY;
+  const apiKey = process.env.SCREENSHOT_API_KEY;
   if (!apiKey) return null;
 
   try {
@@ -101,6 +100,13 @@ function coerceSeverity(value: string): AuditSeverity {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!googleApiKey) {
+      return NextResponse.json(
+        { error: "GOOGLE_GENERATIVE_AI_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { url } = (await request.json()) as { url?: string };
 
     if (!url || typeof url !== "string") {
@@ -109,33 +115,26 @@ export async function POST(request: NextRequest) {
 
     const screenshotBase64 = await captureScreenshot(url);
 
-    const userContent: Array<
-      | { type: "text"; text: string }
-      | {
-          type: "image";
-          source: { type: "base64"; media_type: string; data: string };
-        }
-    > = [{ type: "text", text: buildAuditPrompt(url) }];
+    const genAI = new GoogleGenerativeAI(googleApiKey);
+    const model = genAI.getGenerativeModel({ model: modelId });
+    const supportsVision = modelId.startsWith("gemini");
 
-    if (screenshotBase64) {
-      userContent.push({
-        type: "image",
-        source: { type: "base64", media_type: "image/png", data: screenshotBase64 },
+    const parts: Array<
+      | { text: string }
+      | { inlineData: { data: string; mimeType: string } }
+    > = [{ text: buildAuditPrompt(url) }];
+
+    if (supportsVision && screenshotBase64) {
+      parts.push({
+        inlineData: { data: screenshotBase64, mimeType: "image/png" },
       });
     }
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-0",
-      max_tokens: 2048,
-      messages: [{ role: "user", content: userContent }],
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts }],
     });
 
-    let rawText = message.content
-      .filter((content): content is { type: "text"; text: string } =>
-        content.type === "text"
-      )
-      .map((content) => content.text)
-      .join("");
+    let rawText = result.response.text();
 
     const jsonMatch = rawText.match(/{[\s\S]*}/);
     if (jsonMatch) {

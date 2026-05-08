@@ -62,7 +62,7 @@ export default function Features() {
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl border border-[#e6e1d6] bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-[#e6e1d6] bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
               >
                 <Icon className="h-6 w-6 text-[#01696f]" />
                 <h3 className="mt-4 text-lg font-semibold text-[#28251d]">

@@ -27,22 +27,31 @@ export default function Navbar() {
           AuditFlow
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          <Link href="#how-it-works" className="hover:text-[#01696f]">
+          <Link
+            href="#how-it-works"
+            className="transition-colors hover:text-[#01696f]"
+          >
             How it works
           </Link>
-          <Link href="#features" className="hover:text-[#01696f]">
+          <Link
+            href="#features"
+            className="transition-colors hover:text-[#01696f]"
+          >
             Features
           </Link>
-          <Link href="#pricing" className="hover:text-[#01696f]">
+          <Link
+            href="#pricing"
+            className="transition-colors hover:text-[#01696f]"
+          >
             Pricing
           </Link>
-          <Link href="#faq" className="hover:text-[#01696f]">
+          <Link href="#faq" className="transition-colors hover:text-[#01696f]">
             FAQ
           </Link>
         </nav>
         <Link
           href="#hero"
-          className="inline-flex items-center gap-2 rounded-full bg-[#01696f] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#035e63]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#01696f] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#035e63] hover:shadow-md active:scale-[0.98]"
         >
           Try free
           <ArrowRight className="h-4 w-4" />

@@ -21,7 +21,7 @@ export default function Hero() {
           <form
             action="/audit/preview"
             method="get"
-            className="flex w-full flex-col gap-3 rounded-2xl border border-[#e6e1d6] bg-white p-4 shadow-sm md:flex-row md:items-center"
+            className="flex w-full flex-col gap-3 rounded-2xl border border-[#e6e1d6] bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md md:flex-row md:items-center"
           >
             <div className="flex flex-1 items-center gap-3 rounded-xl border border-[#ebe6dc] bg-[#f9f8f5] px-4 py-3">
               <Globe className="h-5 w-5 text-[#01696f]" />
@@ -35,7 +35,7 @@ export default function Hero() {
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#01696f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#035e63]"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#01696f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#035e63] hover:shadow-md active:scale-[0.98]"
             >
               Run free audit
               <ArrowRight className="h-4 w-4" />

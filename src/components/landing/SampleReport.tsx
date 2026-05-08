@@ -16,7 +16,7 @@ export default function SampleReport() {
             and prioritized outcomes.
           </p>
         </div>
-        <div className="relative overflow-hidden rounded-3xl border border-[#e6e1d6] bg-white p-8 shadow-lg">
+        <div className="relative overflow-hidden rounded-3xl border border-[#e6e1d6] bg-white p-8 shadow-lg transition-shadow duration-200 hover:shadow-xl">
           <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full bg-[#f1ede4] px-3 py-1 text-xs font-semibold text-[#01696f]">
@@ -43,7 +43,7 @@ export default function SampleReport() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded-2xl border border-[#ebe6dc] bg-white p-4 text-sm text-[#6b645a]"
+                  className="rounded-2xl border border-[#ebe6dc] bg-white p-4 text-sm text-[#6b645a] transition-shadow duration-200 hover:shadow-sm"
                 >
                   {item}
                 </div>
