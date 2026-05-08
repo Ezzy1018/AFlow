@@ -1,35 +1,50 @@
-# Dependencies
-node_modules/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
 .pnp
 .pnp.js
+.pnp.*
+
+# yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Testing
-coverage/
+/coverage
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # Next.js
-.next/
-out/
+/.next/
+/out/
 
 # Production
-build/
-dist/
+/build
+/dist/
 
 # Misc
 .DS_Store
 *.pem
 
 # Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Local env files
+# Local env files (can opt-in for committing if needed)
 .env*.local
 .env
 
 # Vercel
 .vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Graphify (recommended ignores)
 graphify-out/manifest.json
