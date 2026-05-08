@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "cd auditflow && npm run build",
+  "outputDirectory": "auditflow/.next",
+  "installCommand": "cd auditflow && npm install"
+}
