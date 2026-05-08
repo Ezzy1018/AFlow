@@ -4,10 +4,11 @@ import type {
   AuditReport,
   AuditSeverity,
 } from "@/types/audit";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const modelId = process.env.GEMMA_MODEL_ID || "gemma-2-9b-it";
-const googleApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const openRouterKey = process.env.OPENROUTER_API_KEY;
+const openRouterModel =
+  process.env.OPENROUTER_MODEL || "google/gemma-4-31b-it:free";
+const openRouterEndpoint = "https://openrouter.ai/api/v1/chat/completions";
 
 const categoryFallback: AuditCategory[] = [
   "copy",
@@ -100,9 +101,9 @@ function coerceSeverity(value: string): AuditSeverity {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!googleApiKey) {
+    if (!openRouterKey) {
       return NextResponse.json(
-        { error: "GOOGLE_GENERATIVE_AI_API_KEY is not configured" },
+        { error: "OPENROUTER_API_KEY is not configured" },
         { status: 500 }
       );
     }
@@ -115,26 +116,39 @@ export async function POST(request: NextRequest) {
 
     const screenshotBase64 = await captureScreenshot(url);
 
-    const genAI = new GoogleGenerativeAI(googleApiKey);
-    const model = genAI.getGenerativeModel({ model: modelId });
-    const supportsVision = modelId.startsWith("gemini");
-
-    const parts: Array<
-      | { text: string }
-      | { inlineData: { data: string; mimeType: string } }
-    > = [{ text: buildAuditPrompt(url) }];
-
-    if (supportsVision && screenshotBase64) {
-      parts.push({
-        inlineData: { data: screenshotBase64, mimeType: "image/png" },
-      });
-    }
-
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts }],
+    const prompt = buildAuditPrompt(url);
+    const response = await fetch(openRouterEndpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${openRouterKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://auditflow.local",
+        "X-Title": "AuditFlow",
+      },
+      body: JSON.stringify({
+        model: openRouterModel,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      }),
     });
 
-    let rawText = result.response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
+      return NextResponse.json(
+        { error: "OpenRouter request failed", details: errorText },
+        { status: 500 }
+      );
+    }
+
+    const payload = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+
+    let rawText = payload.choices?.[0]?.message?.content ?? "";
 
     const jsonMatch = rawText.match(/{[\s\S]*}/);
     if (jsonMatch) {
