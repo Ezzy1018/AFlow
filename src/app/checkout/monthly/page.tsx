@@ -1,55 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
+const BUYMEACOFFEE_USERNAME = process.env.NEXT_PUBLIC_BUYMEACOFFEE_USERNAME || 'someui';
+
 export default function CheckoutMonthlyPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleCheckout = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/checkout/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY,
-          mode: 'subscription',
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      const { sessionId } = await response.json();
-
-      // Redirect to Stripe Checkout
-      const stripe = await import('@stripe/stripe-js').then(m => m.loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-      ));
-
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId });
-      if (stripeError) {
-        throw stripeError;
-      }
-    } catch (err) {
-      console.error(err);
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  const handleCheckout = () => {
+    // Redirect directly to Buy Me a Coffee
+    window.location.href = `https://buymeacoffee.com/${BUYMEACOFFEE_USERNAME}/membership`;
   };
 
   return (
@@ -96,22 +55,15 @@ export default function CheckoutMonthlyPage() {
               </div>
             </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                {error}
-              </div>
-            )}
-
             <button
               onClick={handleCheckout}
-              disabled={loading}
-              className="w-full bg-[#d4a574] hover:bg-[#c49564] text-white font-medium py-3 rounded-lg transition disabled:opacity-50"
+              className="w-full bg-[#d4a574] hover:bg-[#c49564] text-white font-medium py-3 rounded-lg transition"
             >
-              {loading ? 'Processing...' : 'Start Free Trial'}
+              Subscribe
             </button>
 
             <p className="text-xs text-[#6b645a] text-center mt-4">
-              Secure payment powered by Stripe
+              Secure payment powered by Buy Me a Coffee
             </p>
           </div>
         </div>
