@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+// Mark this page as dynamic to prevent static prerendering
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
