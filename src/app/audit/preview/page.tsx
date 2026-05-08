@@ -11,6 +11,7 @@ export default function AuditPreviewPage() {
   const url = useMemo(() => searchParams.get("url"), [searchParams]);
   const [report, setReport] = useState<AuditReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -22,6 +23,7 @@ export default function AuditPreviewPage() {
       }
 
       try {
+        setError(null);
         const response = await fetch("/api/audit", {
           method: "POST",
           headers: {
@@ -31,7 +33,13 @@ export default function AuditPreviewPage() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch audit");
+          let errText = "Failed to fetch audit";
+          try {
+            const errJson = await response.json();
+            errText = errJson?.error || JSON.stringify(errJson?.details) || errText;
+          } catch {}
+          if (isActive) setError(errText);
+          return;
         }
 
         const data = (await response.json()) as AuditReport;
@@ -40,6 +48,7 @@ export default function AuditPreviewPage() {
         }
       } catch (error) {
         console.error(error);
+        if (isActive) setError((error as Error).message);
       } finally {
         if (isActive) {
           setLoading(false);
@@ -71,6 +80,13 @@ export default function AuditPreviewPage() {
             </h1>
             {loading && (
               <p className="text-sm text-[#6b645a]">Running your audit...</p>
+            )}
+            {!loading && error && (
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <p className="font-semibold">Audit failed</p>
+                <p className="mt-1">{error}</p>
+                <p className="mt-2 text-xs text-red-600">Try again in a moment or check your API configuration.</p>
+              </div>
             )}
             {!loading && report && (
               <p className="text-sm text-[#6b645a]">
