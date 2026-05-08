@@ -89,18 +89,15 @@ export default function AuditPreviewPage() {
                     {report.score.overall}
                   </p>
                   <div className="mt-4 space-y-2 text-sm text-[#6b645a]">
-                    <div className="flex items-center justify-between">
-                      <span>Clarity</span>
-                      <span>{report.score.clarity}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Trust</span>
-                      <span>{report.score.trust}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Friction</span>
-                      <span>{report.score.friction}</span>
-                    </div>
+                    {report.score.categories.map((category) => (
+                      <div
+                        key={category.category}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="capitalize">{category.category}</span>
+                        <span>{category.score}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="rounded-2xl border border-[#ebe6dc] bg-white p-5">
@@ -124,7 +121,10 @@ export default function AuditPreviewPage() {
                         {issue.title}
                       </p>
                       <p className="mt-2 text-sm text-[#6b645a]">
-                        {issue.summary}
+                        {issue.description}
+                      </p>
+                      <p className="mt-2 text-xs font-semibold text-[#01696f]">
+                        Fix: {issue.recommendation}
                       </p>
                     </div>
                   ))}
